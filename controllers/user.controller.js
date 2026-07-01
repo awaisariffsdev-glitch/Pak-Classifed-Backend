@@ -47,8 +47,8 @@ const requestSignUp = async (req, res) => {
 
 const userSignUp = async (req, res) => {
     try {
-        const { fullname, email, password, otp } = req.body;
-        if (!fullname || !email || !password || !otp) {
+        const { fullname, email, password, phone, city, otp } = req.body;
+        if (!fullname || !email || !password || !otp || !phone || !city) {
             return res.status(400).json({
                 message: "All Fields Are Required"
             })
@@ -89,7 +89,8 @@ const userSignUp = async (req, res) => {
             email,
             password: hashPassword,
             image: req.file ? req.file.path : null,
-
+            phone,
+            city,
             isVerified: true
 
         })
@@ -136,7 +137,7 @@ const userFind = async (req, res) => {
 
 const userUpdate = async (req, res) => {
     try {
-        const { email, password, fullname } = req.body;
+        const { email, password, fullnamephone,city } = req.body;
         const id = req.params.id;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -150,7 +151,9 @@ const userUpdate = async (req, res) => {
             email,
             fullname,
             password: hashPassword,
-            image: req.file ? req.file.path : null
+            image: req.file ? req.file.path : null,
+            phone,
+            city
         });
 
 
@@ -245,4 +248,4 @@ const userLogIn = async (req, res) => {
 
 
 
-module.exports = { userSignUp, requestSignUp, userLogIn, userFind, userUpdate,userDelete }
+module.exports = { userSignUp, requestSignUp, userLogIn, userFind, userUpdate, userDelete }
