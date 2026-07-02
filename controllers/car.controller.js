@@ -118,8 +118,34 @@ const carFindByIdAndDelete = async (req, res) => {
     }
 }
 
+const carFIndByTitle = async (req, res) => {
+    try {
+        const { q } = req.query;
+
+        if (!q || q.trim() === "") {
+            return res.status(400).json({
+                message: "Search Query is required"
+            })
+        }
+
+        const cars = await Car.find({
+            title: { $regex: q.trim(), $options: "i" }
+        }).sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            message:"Search Successfully",
+            cars
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server Error"
+        })
+    }
+}
 
 
 module.exports = {
-    carAdd, carFindAll, carFindById, carFindByIdAndUpdate,carFindByIdAndDelete
+    carAdd, carFindAll, carFindById, carFindByIdAndUpdate, carFindByIdAndDelete,carFIndByTitle
 }
