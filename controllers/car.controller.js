@@ -118,7 +118,7 @@ const carFindByIdAndDelete = async (req, res) => {
     }
 }
 
-const carFIndByTitle = async (req, res) => {
+const carFindByTitle = async (req, res) => {
     try {
         const { q } = req.query;
 
@@ -147,5 +147,5 @@ const carFIndByTitle = async (req, res) => {
 
 
 module.exports = {
-    carAdd, carFindAll, carFindById, carFindByIdAndUpdate, carFindByIdAndDelete,carFIndByTitle
+    carAdd, carFindAll, carFindById, carFindByIdAndUpdate, carFindByIdAndDelete,carFindByTitle
 }
