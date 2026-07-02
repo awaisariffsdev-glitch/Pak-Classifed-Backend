@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const sendOTP = require("../util/sendOTP");
 const { verifyOTP } = require("../util/verifyOTP");
 const { default: mongoose } = require("mongoose");
+const disposableDomains = require("disposable-email-domains");
 require("dotenv").config();
 
 const requestSignUp = async (req, res) => {
@@ -13,6 +14,26 @@ const requestSignUp = async (req, res) => {
             return res.status(400).json({
                 message: "Email Is Requried"
             })
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                message: "Please enter a valid email address"
+            });
+        }
+
+        // if (!email.includes('@gmail.com')) {
+        //     return res.status(400).json({
+        //         message: "Temporary or disposable email addresses are not allowed"
+        //     })
+        // }
+
+        const domain = email.split('@')[1].toLowerCase();
+        if (disposableDomains.includes(domain)) {
+            return res.status(400).json({
+                message: "Temporary or disposable email addresses are not allowed"
+            });
         }
 
         // console.log("Request Body:", req.body);
@@ -137,7 +158,7 @@ const userFind = async (req, res) => {
 
 const userUpdate = async (req, res) => {
     try {
-        const { email, password, fullnamephone,city } = req.body;
+        const { email, password, fullnamephone, city } = req.body;
         const id = req.params.id;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
