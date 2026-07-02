@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Car = require("../models/car.model");
 
 const carAdd = async (req, res) => {
@@ -29,7 +30,96 @@ const carAdd = async (req, res) => {
     }
 }
 
+const carFindAll = async (req, res) => {
+    try {
+        const findAll = await Car.find();
+        return res.status(200).json({
+            findAll
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server Error"
+        })
+    }
+}
+
+const carFindById = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Id Is Requried"
+            })
+        }
+
+
+        const carFind = await Car.findById(id);
+        return res.status(200).json({
+            message: "Car Find Successfully",
+            carFind
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server Error"
+        })
+    }
+}
+
+const carFindByIdAndUpdate = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { userId, title, description, price, brand, model, year, color, mileage, fuelType, transmission, city } = req.body;
+        // console.log(req.body)
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "ID Is Required"
+            })
+        }
+
+
+        const carUpdate = await Car.findByIdAndUpdate(id, {
+            userId, title, description, price, brand, model, year, color, mileage, fuelType, transmission, city, image: req.file ? req.file.path : null
+        });
+
+        return res.status(200).json({
+            message: "Car Updated Successfully"
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server Error"
+        })
+    }
+}
+
+const carFindByIdAndDelete = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: "Id Is Required"
+            })
+        }
+
+        const carFind = await Car.findByIdAndDelete(id);
+
+        return res.status(200).json({
+            message: "Car Delete Successfully"
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server Error"
+        })
+    }
+}
+
+
 
 module.exports = {
-    carAdd
+    carAdd, carFindAll, carFindById, carFindByIdAndUpdate,carFindByIdAndDelete
 }
