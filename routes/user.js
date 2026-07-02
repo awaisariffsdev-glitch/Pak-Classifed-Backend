@@ -1,5 +1,5 @@
 const express = require("express");
-const upload = require("../middleware/uploads");
+const upload = require("../middleware/profile");
 const { userSignUp, requestSignUp, userLogIn, userFind, userUpdate, userDelete } = require("../controllers/user.controller");
 const router = express.Router();
 
