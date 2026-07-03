@@ -1,9 +1,9 @@
 const express = require("express");
 const upload = require("../middleware/profile");
-const { userSignUp, requestSignUp, userLogIn, userFind, userUpdate, userDelete } = require("../controllers/user.controller");
+const { userSignUp, requestSignUp, userLogIn, userFind, userUpdate, userDelete, verifySignUpOTP } = require("../controllers/user.controller");
 const router = express.Router();
 
-router.post("/verify", requestSignUp);
+router.post("/verify", verifySignUpOTP);
 router.post("/signUp", upload.single("image"), userSignUp);
 router.post("/logIn", userLogIn);
 router.get("/find/:id", userFind);

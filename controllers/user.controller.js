@@ -66,41 +66,108 @@ const requestSignUp = async (req, res) => {
 }
 
 
+// const userSignUp = async (req, res) => {
+//     try {
+//         const { fullname, email, password, phone, city, otp } = req.body;
+//         if (!fullname || !email || !password || !phone || !city) {
+//             return res.status(400).json({
+//                 message: "All Fields Are Required"
+//             })
+//         }
+
+//         if (!email.includes('@gmail.com')) {
+//             return res.status(400).json({
+//                 message: "Invalid Email Format"
+//             })
+//         }
+//         const specialCharaters = /[!@#$%^&*()<>:"{}[\]|\\/?.,;'\-_=+]/;
+
+//         if (!specialCharaters.test(password)) {
+//             return res.status(400).json({
+//                 message: "Password Must Contains Alleast One Special Charater"
+//             })
+//         }
+//         // const verification = await verifyOTP(email, otp);
+//         // console.log("Verification Result ", verification)
+//         // if (!verification.success) {
+//         //     return res.status(400).json({
+//         //         message: verification.message
+//         //     });
+
+//         // }
+
+//         const userFind = await User.findOne({ email });
+//         if (userFind) {
+//             return res.status(409).json({
+//                 message: "User Is Already Existed"
+//             })
+//         }
+
+//         const result = await sendOTP(email, "SignUp OTP - Pak Classifed");
+//         if (!result || !result.success) {
+//             return res.status(400).json({
+//                 message: "Failed To send OTP"
+//             })
+//         }
+//         return res.status(200).json({
+//             message: "OTP sent to your email. Please verify to complete signup",
+//             email
+//         })
+//         const hashPassword = await bcrypt.hash(password, 13);
+
+//         const newUser = new User({
+//             fullname,
+//             email,
+//             password: hashPassword,
+//             image: req.file ? req.file.path : null,
+//             phone,
+//             city,
+//             isVerified: true
+
+//         })
+
+//         await newUser.save();
+
+
+//         return res.status(201).json({
+//             message: "User Registered Successfully"
+//         })
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).json({
+//             message: "Server Error"
+//         })
+//     }
+// }
+
 const userSignUp = async (req, res) => {
     try {
-        const { fullname, email, password, phone, city, otp } = req.body;
-        if (!fullname || !email || !password || !otp || !phone || !city) {
+        const { fullname, email, password, phone, city } = req.body;
+
+        if (!fullname || !email || !password || !phone || !city) {
             return res.status(400).json({
                 message: "All Fields Are Required"
-            })
+            });
         }
 
         if (!email.includes('@gmail.com')) {
             return res.status(400).json({
                 message: "Invalid Email Format"
-            })
+            });
         }
-        const specialCharaters = /[!@#$%^&*()<>:"{}[\]|\\/?.,;'\-_=+]/;
 
+        const specialCharaters = /[!@#$%^&*()<>:"{}[\]|\\/?.,;'\-_=+]/;
         if (!specialCharaters.test(password)) {
             return res.status(400).json({
-                message: "Password Must Contains Alleast One Special Charater"
-            })
-        }
-        const verification = await verifyOTP(email, otp);
-        console.log("Verification Result ", verification)
-        if (!verification.success) {
-            return res.status(400).json({
-                message: verification.message
+                message: "Password Must Contain At Least One Special Character"
             });
-
         }
 
         const userFind = await User.findOne({ email });
         if (userFind) {
             return res.status(409).json({
-                message: "User Is Already Existed"
-            })
+                message: "User Already Exists"
+            });
         }
 
         const hashPassword = await bcrypt.hash(password, 13);
@@ -112,23 +179,71 @@ const userSignUp = async (req, res) => {
             image: req.file ? req.file.path : null,
             phone,
             city,
-            isVerified: true
-
-        })
+            isVerified: false   // ✅ not verified yet
+        });
 
         await newUser.save();
 
+        // ✅ send OTP after creating the account
+        const result = await sendOTP(email, "SignUp OTP - Pak Classifed");
+        if (!result || !result.success) {
+            return res.status(400).json({
+                message: "User Created But Failed To Send OTP"
+            });
+        }
 
         return res.status(201).json({
-            message: "User Registered Successfully"
-        })
+            message: "User Registered. OTP sent to your email. Please verify to activate your account",
+            email
+        });
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             message: "Server Error"
-        })
+        });
     }
-}
+};
+
+const verifySignUpOTP = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                message: "Email And OTP Are Required"
+            });
+        }
+
+        const verification = await verifyOTP(email, otp);
+        if (!verification.success) {
+            return res.status(400).json({
+                message: verification.message
+            });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                message: "User Not Found"
+            });
+        }
+
+        user.isVerified = true;
+        await user.save();
+
+        return res.status(200).json({
+            message: "Account Verified Successfully"
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server Error"
+        });
+    }
+};
+
 
 
 const userFind = async (req, res) => {
@@ -146,7 +261,7 @@ const userFind = async (req, res) => {
 
         return res.status(200).json({
             message: "User Find Successfully",
-            userFindById
+            user:userFindById
         })
     } catch (error) {
         console.log(error);
@@ -253,7 +368,15 @@ const userLogIn = async (req, res) => {
 
         return res.status(200).json({
             message: "User LogIn Successfully",
-            token
+            token,
+            user: {
+                id: userFind._id,
+                fullname: userFind.fullname,
+                email: userFind.email,
+                image: userFind.image,
+                phone: userFind.phone,
+                city: userFind.city,
+            }
         })
 
 
@@ -269,4 +392,4 @@ const userLogIn = async (req, res) => {
 
 
 
-module.exports = { userSignUp, requestSignUp, userLogIn, userFind, userUpdate, userDelete }
+module.exports = { userSignUp, requestSignUp, userLogIn, userFind, userUpdate, userDelete, verifySignUpOTP }
