@@ -17,6 +17,7 @@ app.use(cors({
 }));
 
 app.use("/uploads", express.static("uploads"));
+app.use("/cars", express.static("cars")); 
 
 
 app.get("/profile", authMiddleware, async (req, res) => {

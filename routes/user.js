@@ -4,6 +4,7 @@ const { userSignUp, requestSignUp, userLogIn, userFind, userUpdate, userDelete, 
 const router = express.Router();
 
 router.post("/verify", verifySignUpOTP);
+router.post("/requestSignUp", requestSignUp);
 router.post("/signUp", upload.single("image"), userSignUp);
 router.post("/logIn", userLogIn);
 router.get("/find/:id", userFind);

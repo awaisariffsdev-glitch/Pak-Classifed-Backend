@@ -3,17 +3,17 @@ const Car = require("../models/car.model");
 
 const carAdd = async (req, res) => {
     try {
-        const { userId, title, description, price, brand, model, year, color, mileage, fuelType, transmission, city } = req.body;
+        const { userId, title, description, price, brand, model, year, color, mileage, fuelType, transmission, city, category } = req.body;
         // console.log(req.body);
         // const imageNames = req.files.map(file => file.filename);
-        if (!userId || !title || !description || !price || !brand || !model || !year || !color || !mileage || !fuelType || !transmission || !city) {
+        if (!userId || !title || !description || !price || !brand || !model || !year || !color || !mileage || !fuelType || !transmission || !city || !category) {
             return res.status(400).json({
                 message: "All Fields Are Required"
             })
         }
 
         const newCar = new Car({
-            userId, title, description, price, brand, model, year, color, mileage, fuelType, transmission, city, image: req.file ? req.file.path : null
+            userId, title, description, price, brand, model, year, color, mileage, fuelType, transmission, city, category, image: req.file ? req.file.path : null
         });
 
         await newCar.save();
@@ -26,6 +26,26 @@ const carAdd = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             message: "Something went wrong"
+        })
+    }
+}
+
+const getCarByCategory = async (req, res) => {
+    try {
+        const { category } = req.params;
+        const cars = await Car.find({ category });
+        if (!cars) {
+            return res.status(400).json({
+                message: "Category Not found"
+            })
+
+
+        }
+        return res.status(200).json({ cars });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server Error"
         })
     }
 }
@@ -133,7 +153,7 @@ const carFindByTitle = async (req, res) => {
         }).sort({ createdAt: -1 });
 
         return res.status(200).json({
-            message:"Search Successfully",
+            message: "Search Successfully",
             cars
         })
 
@@ -147,5 +167,5 @@ const carFindByTitle = async (req, res) => {
 
 
 module.exports = {
-    carAdd, carFindAll, carFindById, carFindByIdAndUpdate, carFindByIdAndDelete,carFindByTitle
+    carAdd, carFindAll, carFindById, carFindByIdAndUpdate, carFindByIdAndDelete, carFindByTitle, getCarByCategory
 }

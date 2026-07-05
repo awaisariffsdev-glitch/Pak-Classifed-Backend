@@ -13,7 +13,12 @@ const carSchema = mongoose.Schema({
     fuelType: { type: String, required: true },
     transmission: { type: String, enum: ["Manual", "Automatic"], required: true, },
     city: { type: String, required: true },
-    image: { type: String, required: true }
+    image: { type: String, required: true },
+    category: {
+        type: String, required: true,
+        enum: ["SUV", "Sedan", "Crossover", "Hatchback",
+            "Wagon", "Sports", "Hybrid", "Convertible"]
+    }
 
 
 

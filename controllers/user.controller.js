@@ -9,61 +9,26 @@ require("dotenv").config();
 
 const requestSignUp = async (req, res) => {
     try {
-        const { email } = req.body;
-        if (!email) {
-            return res.status(400).json({
-                message: "Email Is Requried"
-            })
-        }
+        const { email, resend } = req.body;
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({
-                message: "Please enter a valid email address"
-            });
-        }
+        // ... your validations
 
-        // if (!email.includes('@gmail.com')) {
-        //     return res.status(400).json({
-        //         message: "Temporary or disposable email addresses are not allowed"
-        //     })
-        // }
-
-        const domain = email.split('@')[1].toLowerCase();
-        if (disposableDomains.includes(domain)) {
-            return res.status(400).json({
-                message: "Temporary or disposable email addresses are not allowed"
-            });
-        }
-
-        // console.log("Request Body:", req.body);
-        // console.log("Email from request:", email);
-        const userFind = await User.findOne({ email });
-        if (userFind) {
-            return res.status(400).json({
-                message: "User Already existed"
-            })
-        }
-
-        const result = await sendOTP(email, "SignUp OTP - Pak Classifed");
-        if (!result || !result.success) {
-            return res.status(400).json({
-                message: "Failed To send OTP"
-            })
-        }
-
+        await sendOTP(email, "SignUp OTP - Pak Classified");
 
         return res.status(200).json({
-            message: "OTP sent to your email. Please verify to complete signup",
+            message: resend
+                ? "A new OTP has been sent to your email."
+                : "OTP sent to your email. Please verify to complete signup.",
             email
-        })
+        });
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             message: "Server Error"
-        })
+        });
     }
-}
+};
 
 
 // const userSignUp = async (req, res) => {
