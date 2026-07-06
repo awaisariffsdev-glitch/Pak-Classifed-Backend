@@ -50,6 +50,30 @@ const getCarByCategory = async (req, res) => {
     }
 }
 
+
+const carFindByUser = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({
+                message: "Id Is Required"
+            })
+        }
+
+
+        const carFind = await Car.find({  userId }).sort({ createdAt: -1 });
+        return res.status(200).json({
+            message: "Task Find Successfully",
+            carFind
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Server Error"
+        })
+    }
+}
+
 const carFindAll = async (req, res) => {
     try {
         const findAll = await Car.find();
@@ -167,5 +191,5 @@ const carFindByTitle = async (req, res) => {
 
 
 module.exports = {
-    carAdd, carFindAll, carFindById, carFindByIdAndUpdate, carFindByIdAndDelete, carFindByTitle, getCarByCategory
+    carAdd, carFindAll, carFindById, carFindByIdAndUpdate, carFindByIdAndDelete, carFindByTitle, getCarByCategory, carFindByUser
 }
