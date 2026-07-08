@@ -150,7 +150,7 @@ const userSignUp = async (req, res) => {
         await newUser.save();
 
         // ✅ send OTP after creating the account
-        const result = await sendOTP(email, "SignUp OTP - Pak Classifed");
+        const result =  sendOTP(email, "SignUp OTP - Pak Classifed");
         if (!result || !result.success) {
             return res.status(400).json({
                 message: "User Created But Failed To Send OTP"
@@ -214,9 +214,9 @@ const verifySignUpOTP = async (req, res) => {
 const userFind = async (req, res) => {
     try {
         const id = req.params.id;
-        console.log("Received ID:", id);
-        console.log("Connected DB:", mongoose.connection.name); // ADDED: confirms which database this query is actually hitting
-        console.log("Collection:", User.collection.name);
+        // console.log("Received ID:", id);
+        // console.log("Connected DB:", mongoose.connection.name); // ADDED: confirms which database this query is actually hitting
+        // console.log("Collection:", User.collection.name);
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 message: "Id Is Requried"
@@ -224,7 +224,7 @@ const userFind = async (req, res) => {
         }
 
         const userFindById = await User.findById(id);
-        console.log("Found user:", userFindById);
+        // console.log("Found user:", userFindById);
 
 
 
