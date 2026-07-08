@@ -214,6 +214,9 @@ const verifySignUpOTP = async (req, res) => {
 const userFind = async (req, res) => {
     try {
         const id = req.params.id;
+        console.log("Received ID:", id);
+        console.log("Connected DB:", mongoose.connection.name); // ADDED: confirms which database this query is actually hitting
+        console.log("Collection:", User.collection.name);
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 message: "Id Is Requried"
@@ -221,12 +224,13 @@ const userFind = async (req, res) => {
         }
 
         const userFindById = await User.findById(id);
+        console.log("Found user:", userFindById);
 
 
 
         return res.status(200).json({
             message: "User Find Successfully",
-            user:userFindById
+            userFindById
         })
     } catch (error) {
         console.log(error);
@@ -238,37 +242,56 @@ const userFind = async (req, res) => {
 
 const userUpdate = async (req, res) => {
     try {
-        const { email, password, fullnamephone, city } = req.body;
+        const { email, password, fullname, phone, city } = req.body;
         const id = req.params.id;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                message: "Id is requried"
-            })
+                message: "Id is required"
+            });
         }
 
-        const hashPassword = await bcrypt.hash(password, 13);
-        const userFindByIdAndUpdate = await User.findByIdAndUpdate(id, {
-            email,
+        const updateFields = {
             fullname,
-            password: hashPassword,
-            image: req.file ? req.file.path : null,
+            email,
             phone,
-            city
-        });
+            city,
+        };
 
+        // Only hash + include password if the user actually submitted a new one
+        if (password && password.trim()) {
+            updateFields.password = await bcrypt.hash(password, 13);
+        }
+
+        // Only touch image if a new file was actually uploaded
+        if (req.file) {
+            updateFields.image = req.file.path;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            updateFields,
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
 
         return res.status(200).json({
             message: "User Updated Successfully",
+            user: updatedUser   // key renamed to match what the frontend reads: result.user
+        });
 
-        })
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             message: "Server Error"
-        })
+        });
     }
-}
+};
 
 const userDelete = async (req, res) => {
     try {
