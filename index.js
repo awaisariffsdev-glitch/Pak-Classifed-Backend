@@ -12,7 +12,7 @@ app.use(morgan("dev"));
 // app.use(cors);
 const cors = require("cors");
 app.use(cors({
-    origin: "*", // React Vite
+    origin: "https://pak-classifed-frontend.vercel.app/", // React Vite
     credentials: true
 }));
 
