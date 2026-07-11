@@ -17,7 +17,7 @@ app.use(cors({
 }));
 
 app.use("/uploads", express.static("uploads"));
-app.use("/cars", express.static("cars")); 
+app.use("/cars", express.static("cars"));
 
 
 app.get("/profile", authMiddleware, async (req, res) => {
@@ -52,8 +52,8 @@ app.get("/profile", authMiddleware, async (req, res) => {
 app.use("/user", require("./routes/user"));
 app.use("/car", require("./routes/car"));
 
-app.get("/",(req,res)=>{
-    return res.send("Hello ")
+app.get("/", (req, res) => {
+    return res.send(" Hello ")
 })
 
 const PORT = process.env.PORT || 8080;
