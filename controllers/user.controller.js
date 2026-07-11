@@ -151,11 +151,11 @@ const userSignUp = async (req, res) => {
 
         // ✅ send OTP after creating the account
         const result =  sendOTP(email, "SignUp OTP - Pak Classifed");
-        if (!result || !result.success) {
-            return res.status(400).json({
-                message: "User Created But Failed To Send OTP"
-            });
-        }
+        // if (!result || !result.success) {
+        //     return res.status(400).json({
+        //         message: "User Created But Failed To Send OTP"
+        //     });
+        // }
 
         return res.status(201).json({
             message: "User Registered. OTP sent to your email. Please verify to activate your account",

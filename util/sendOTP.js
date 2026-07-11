@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
-const {storeOTP}=require("./verifyOTP");
+const { storeOTP } = require("./verifyOTP");
 
 require("dotenv").config();
 const sendOTP = async (toEmail, subject) => {
@@ -11,9 +11,9 @@ const sendOTP = async (toEmail, subject) => {
             specialChars: false,
             digits: true
         });
-        console.log(otp);
+        console.log("Otp generatedis : ", otp);
 
-        storeOTP(toEmail,otp);
+        storeOTP(toEmail, otp);
 
         const transporter = nodemailer.createTransport({
             service: "gmail",
@@ -24,11 +24,11 @@ const sendOTP = async (toEmail, subject) => {
         });
 
 
-         transporter.sendMail({
+        transporter.sendMail({
             from: `"Pak Classifed"<${process.env.USER_EMAIL}`,
             to: toEmail,
             subject,
-       html: `
+            html: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -159,10 +159,10 @@ If you did not request this verification code, you can safely ignore this email.
         });
 
 
-        console.log("OTP Sent Successfully",toEmail);
+        console.log("OTP Sent Successfully", toEmail);
         return {
-            success:true,
-            message:"OTP Send Successfully"
+            success: true,
+            message: "OTP Send Successfully"
         }
 
 
@@ -171,8 +171,8 @@ If you did not request this verification code, you can safely ignore this email.
     } catch (error) {
         console.log(error);
         return {
-            success:false,
-            message:"Something went wrong while sending OTP"
+            success: false,
+            message: "Something went wrong while sending OTP"
 
         }
     }

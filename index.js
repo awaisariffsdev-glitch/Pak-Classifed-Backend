@@ -56,6 +56,15 @@ app.get("/", (req, res) => {
     return res.send(" Hello ")
 })
 
+
+app.use((err, req, res, next) => {
+    return res.send(err)
+})
+
+app.use((req, res, next) => {
+    return res.status(404).json({ message: "No route matched, 404 not found" })
+})
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server Is Running On http://localhost:${PORT}`);
