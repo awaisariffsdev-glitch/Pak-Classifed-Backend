@@ -52,6 +52,10 @@ app.get("/profile", authMiddleware, async (req, res) => {
 app.use("/user", require("./routes/user"));
 app.use("/car", require("./routes/car"));
 
+app.get("/",(req,res)=>{
+    return res.send("Hello ")
+})
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server Is Running On http://localhost:${PORT}`);
