@@ -12,7 +12,7 @@ app.use(morgan("dev"));
 // app.use(cors);
 const cors = require("cors");
 app.use(cors({
-    origin: "http://localhost:5173", // React Vite
+    origin: "*", // React Vite
     credentials: true
 }));
 
