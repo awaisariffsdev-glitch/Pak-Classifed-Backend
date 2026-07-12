@@ -24,7 +24,7 @@ const sendOTP = async (toEmail, subject) => {
         });
 
 
-        transporter.sendMail({
+        await transporter.sendMail({
             from: `"Pak Classifed"<${process.env.USER_EMAIL}`,
             to: toEmail,
             subject,
