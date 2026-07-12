@@ -10,9 +10,23 @@ const User = require("./models/user.models")
 app.use(morgan("dev"));
 // const cors = require("cors")
 // app.use(cors);
-const cors = require("cors");
+// const cors = require("cors");
+// app.use(cors({
+//     origin: "https://pak-classifed-frontend.vercel.app",
+//     credentials: true
+// }));
+const allowedOrigins = [
+    "https://pak-classifed-frontend.vercel.app",
+];
+
 app.use(cors({
-    origin: "https://pak-classifed-frontend.vercel.app",
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true
 }));
 
