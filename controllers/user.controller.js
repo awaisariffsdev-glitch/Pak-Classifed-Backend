@@ -1,34 +1,11 @@
 const User = require("../models/user.models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const sendOTP = require("../util/sendOTP");
-const { verifyOTP } = require("../util/verifyOTP");
 const { default: mongoose } = require("mongoose");
 const disposableDomains = require("disposable-email-domains");
 require("dotenv").config();
 
-const requestSignUp = async (req, res) => {
-    try {
-        const { email, resend } = req.body;
 
-        // ... your validations
-
-        await sendOTP(email, "SignUp OTP - Pak Classified");
-
-        return res.status(200).json({
-            message: resend
-                ? "A new OTP has been sent to your email."
-                : "OTP sent to your email. Please verify to complete signup.",
-            email
-        });
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message: "Server Error"
-        });
-    }
-};
 
 
 // const userSignUp = async (req, res) => {
@@ -150,7 +127,7 @@ const userSignUp = async (req, res) => {
         await newUser.save();
 
         // ✅ send OTP after creating the account
-        const result =  sendOTP(email, "SignUp OTP - Pak Classifed");
+        // const result =  sendOTP(email, "SignUp OTP - Pak Classifed");
         // if (!result || !result.success) {
         //     return res.status(400).json({
         //         message: "User Created But Failed To Send OTP"
@@ -170,44 +147,7 @@ const userSignUp = async (req, res) => {
     }
 };
 
-const verifySignUpOTP = async (req, res) => {
-    try {
-        const { email, otp } = req.body;
 
-        if (!email || !otp) {
-            return res.status(400).json({
-                message: "Email And OTP Are Required"
-            });
-        }
-
-        const verification = await verifyOTP(email, otp);
-        if (!verification.success) {
-            return res.status(400).json({
-                message: verification.message
-            });
-        }
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({
-                message: "User Not Found"
-            });
-        }
-
-        user.isVerified = true;
-        await user.save();
-
-        return res.status(200).json({
-            message: "Account Verified Successfully"
-        });
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message: "Server Error"
-        });
-    }
-};
 
 
 
@@ -380,4 +320,4 @@ const userLogIn = async (req, res) => {
 
 
 
-module.exports = { userSignUp, requestSignUp, userLogIn, userFind, userUpdate, userDelete, verifySignUpOTP }
+module.exports = { userSignUp, userLogIn, userFind, userUpdate, userDelete }
